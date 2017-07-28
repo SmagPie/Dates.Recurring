@@ -20,5 +20,18 @@ namespace Dates.Recurring.Type
         }
 
         public abstract DateTime? Next(DateTime after);
+        public abstract DateTime? Prev(DateTime before);
+
+        public virtual IEnumerable<DateTime> Past(DateTime before)
+        {
+            for (var prev = Prev(before); prev != null; prev = Prev(prev.Value))
+                yield return prev.Value;
+        }
+
+        public virtual IEnumerable<DateTime> Future(DateTime after)
+        {
+            for (var next = Next(after); next != null; next = Next(next.Value))
+                yield return next.Value;
+        }
     }
 }

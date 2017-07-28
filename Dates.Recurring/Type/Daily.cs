@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +17,11 @@ namespace Dates.Recurring.Type
 
         public override DateTime? Next(DateTime after)
         {
+            return Next(after, false);
+        }
+
+        private DateTime? Next(DateTime after, bool ignoreEndLimit)
+        {
             var next = Starting;
 
             if (after.Date < Starting.Date)
@@ -27,7 +34,30 @@ namespace Dates.Recurring.Type
                 next = next.AddDays(X);
             }
 
-            if (Ending.HasValue && next.Date > Ending.Value.Date)
+            if (!ignoreEndLimit && Ending.HasValue && next.Date > Ending.Value.Date)
+            {
+                return null;
+            }
+
+            return next;
+        }
+
+        public override DateTime? Prev(DateTime before)
+        {
+            // ReSharper disable once PossibleInvalidOperationException
+            var next = Next(before, true).Value;
+
+            if (before.Date > Ending.Value.Date)
+            {
+                before = Ending.Value + 1.Days();
+            }
+
+            while ((before.Ticks - next.Ticks) <= TimeSpan.TicksPerSecond)
+            {
+                next = next.AddDays(-X);
+            }
+
+            if (next.Date < Starting.Date)
             {
                 return null;
             }

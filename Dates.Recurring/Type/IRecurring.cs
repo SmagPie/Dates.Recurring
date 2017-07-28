@@ -9,5 +9,8 @@ namespace Dates.Recurring.Type
     public interface IRecurring
     {
         DateTime? Next(DateTime after);
+        DateTime? Prev(DateTime before);
+        IEnumerable<DateTime> Past(DateTime before);
+        IEnumerable<DateTime> Future(DateTime after);
     }
 }

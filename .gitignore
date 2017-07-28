@@ -4,3 +4,4 @@ packages/
 *.vspscc
 *.suo
 *.user
+*.ncrunchproject

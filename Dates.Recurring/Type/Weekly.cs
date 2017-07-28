@@ -18,6 +18,11 @@ namespace Dates.Recurring.Type
 
         public override DateTime? Next(DateTime after)
         {
+            return Next(after, false);
+        }
+
+        private DateTime? Next(DateTime after, bool ignoreEndLimit)
+        {
             var next = Starting;
 
             if (after.Date < Starting.Date)
@@ -46,7 +51,42 @@ namespace Dates.Recurring.Type
                 }
             }
 
-            if (Ending.HasValue && next.Date > Ending.Value.Date)
+            if (!ignoreEndLimit && Ending.HasValue && next.Date > Ending.Value.Date)
+            {
+                return null;
+            }
+
+            return next;
+        }
+
+        public override DateTime? Prev(DateTime before)
+        {
+            // ReSharper disable once PossibleInvalidOperationException
+            var next = Next(before, true).Value;
+
+            if (before.Date > Ending.Value.Date)
+            {
+                before = Ending.Value + 1.Days();
+            }
+
+            while (next.Date >= before.Date || !DayOfWeekMatched(next.DayOfWeek))
+            {
+                if (next.DayOfWeek != DayOfWeek.Monday)
+                {
+                    // Step from the end of the week to the start of the week
+                    next = next - 1.Days();
+                }
+                else
+                {
+                    // Skip ahead by x weeks.
+                    next = next - X.Weeks();
+
+                    // Rewind to the end of the week
+                    next = next.AddDays(6);
+                }
+            }
+
+            if (next.Date < Starting.Date)
             {
                 return null;
             }

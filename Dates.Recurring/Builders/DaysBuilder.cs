@@ -29,7 +29,5 @@ namespace Dates.Recurring.Builders
         {
             return new Daily(_days, _starting, _ending);
         }
-
-
     }
 }
