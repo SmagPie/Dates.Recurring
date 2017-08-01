@@ -11,30 +11,38 @@ namespace Dates.Recurring.Type
     {
         public Day Days { get; set; }
 
-        public Weekly(int weeks, DateTime starting, DateTime? ending, Day days) : base(weeks, starting, ending)
+        public Weekly(int weeks, DateTime starting, DateTime? endingAfterDate, int? endingAfterNumOfOccurrences, Day days) : base(weeks, starting, endingAfterDate, endingAfterNumOfOccurrences)
         {
             Days = days;
         }
 
         public override DateTime? Next(DateTime after)
         {
-            return Next(after, false);
+            return Next(after, out var next) ? (DateTime?)next : null;
         }
 
-        private DateTime? Next(DateTime after, bool ignoreEndLimit)
+        private bool Next(DateTime after, out DateTime next)
         {
-            var next = Starting;
+            var occurrenceCount = 1;
+            next = Starting;
 
-            if (after.Date < Starting.Date)
-            {
+            if (after < Starting)
                 after = Starting - 1.Days();
-            }
 
-            while (next.Date <= after.Date || !DayOfWeekMatched(next.DayOfWeek))
+            while (next <= after || !DayOfWeekMatched(next.DayOfWeek))
             {
                 if (next.DayOfWeek != DayOfWeek.Saturday)
                 {
                     next = next + 1.Days();
+
+                    if (DayOfWeekMatched(next.DayOfWeek))
+                    {
+                        if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                            (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
+                            return false;
+
+                        occurrenceCount++;
+                    }
                 }
                 else
                 {
@@ -51,25 +59,17 @@ namespace Dates.Recurring.Type
                 }
             }
 
-            if (!ignoreEndLimit && Ending.HasValue && next.Date > Ending.Value.Date)
-            {
-                return null;
-            }
-
-            return next;
+            return true;
         }
 
         public override DateTime? Prev(DateTime before)
         {
-            // ReSharper disable once PossibleInvalidOperationException
-            var next = Next(before, true).Value;
+            Next(before, out var next);
 
-            if (before.Date > Ending.Value.Date)
-            {
-                before = Ending.Value + 1.Days();
-            }
+            if (before > next)
+                before = next;
 
-            while (next.Date >= before.Date || !DayOfWeekMatched(next.DayOfWeek))
+            while (next >= before || !DayOfWeekMatched(next.DayOfWeek))
             {
                 if (next.DayOfWeek != DayOfWeek.Monday)
                 {
@@ -86,10 +86,8 @@ namespace Dates.Recurring.Type
                 }
             }
 
-            if (next.Date < Starting.Date)
-            {
+            if (next < Starting)
                 return null;
-            }
 
             return next;
         }

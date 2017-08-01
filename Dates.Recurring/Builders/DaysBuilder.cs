@@ -11,7 +11,8 @@ namespace Dates.Recurring.Builders
     {
         private int _days;
         private DateTime _starting;
-        private DateTime? _ending;
+        private DateTime? _endingAfterDate;
+        private int? _endingAfterNumOfOccurrences;
 
         public DaysBuilder(int days, DateTime starting)
         {
@@ -19,15 +20,21 @@ namespace Dates.Recurring.Builders
             _starting = starting;
         }
 
-        public DaysBuilder Ending(DateTime ending)
+        public DaysBuilder Ending(DateTime afterDate)
         {
-            _ending = ending;
+            _endingAfterDate = afterDate;
+            return this;
+        }
+
+        public DaysBuilder Ending(int afterNumOfRecurrences)
+        {
+            _endingAfterNumOfOccurrences = afterNumOfRecurrences;
             return this;
         }
 
         public Daily Build()
         {
-            return new Daily(_days, _starting, _ending);
+            return new Daily(_days, _starting, _endingAfterDate, _endingAfterNumOfOccurrences);
         }
     }
 }

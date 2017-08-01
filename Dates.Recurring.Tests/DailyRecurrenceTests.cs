@@ -78,5 +78,24 @@ namespace Dates.Recurring.Tests
 
             Assert.Equal(futureSeries, pastSeries);
         }
+
+        [Fact]
+        public void Daily_EndAfterNumOfOccurences()
+        {
+            IRecurring daily = Recurs
+                .Starting(new DateTime(2015, 1, 1))
+                .Every(1)
+                .Days()
+                .Ending(2)
+                .Build();
+
+            Assert.Equal(new DateTime(2015, 1, 1), daily.Next(new DateTime(2014, 7, 3)));
+            Assert.Equal(new DateTime(2015, 1, 2), daily.Next(new DateTime(2015, 1, 1)));
+            Assert.Null(daily.Next(new DateTime(2015, 1, 3)));
+
+            Assert.Equal(new DateTime(2015, 1, 2), daily.Prev(new DateTime(2017, 1, 1)));
+            Assert.Equal(new DateTime(2015, 1, 1), daily.Prev(new DateTime(2015, 1, 2)));
+            Assert.Null(daily.Prev(new DateTime(2015, 1, 1)));
+        }
     }
 }

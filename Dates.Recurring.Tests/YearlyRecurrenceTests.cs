@@ -206,6 +206,35 @@ namespace Dates.Recurring.Tests
 
             Assert.Equal(futureSeries, pastSeries);
         }
+
+        [Fact]
+        public void Yearly_EndAfterNumOfOccurences()
+        {
+            IRecurring recur = Recurs
+                .Starting(new DateTime(2015, 1, 1))
+                .Every(3)
+                .Years()
+                .OnDay(24)
+                .OnMonths(Month.JANUARY | Month.FEBRUARY | Month.AUGUST)
+                .Ending(6)
+                .Build();
+
+            Assert.Equal(new DateTime(2015, 1, 24), recur.Next(new DateTime(2014, 2, 1)));
+            Assert.Equal(new DateTime(2015, 2, 24), recur.Next(new DateTime(2015, 1, 24)));
+            Assert.Equal(new DateTime(2015, 8, 24), recur.Next(new DateTime(2015, 2, 24)));
+            Assert.Equal(new DateTime(2018, 1, 24), recur.Next(new DateTime(2015, 8, 24)));
+            Assert.Equal(new DateTime(2018, 2, 24), recur.Next(new DateTime(2018, 1, 24)));
+            Assert.Equal(new DateTime(2018, 8, 24), recur.Next(new DateTime(2018, 2, 24)));
+            Assert.Null(recur.Next(new DateTime(2018, 8, 24)));
+
+            Assert.Equal(new DateTime(2018, 8, 24), recur.Prev(new DateTime(2020, 1, 1)));
+            Assert.Equal(new DateTime(2018, 2, 24), recur.Prev(new DateTime(2018, 8, 24)));
+            Assert.Equal(new DateTime(2018, 1, 24), recur.Prev(new DateTime(2018, 2, 24)));
+            Assert.Equal(new DateTime(2015, 8, 24), recur.Prev(new DateTime(2018, 1, 24)));
+            Assert.Equal(new DateTime(2015, 2, 24), recur.Prev(new DateTime(2015, 8, 24)));
+            Assert.Equal(new DateTime(2015, 1, 24), recur.Prev(new DateTime(2015, 2, 24)));
+            Assert.Null(recur.Prev(new DateTime(2015, 1, 24)));
+        }
     }
 }
 

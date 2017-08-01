@@ -13,7 +13,8 @@ namespace Dates.Recurring.Builders
         private int _dayOfMonth = 1;
         private Month _month = Month.JANUARY;
         private DateTime _starting;
-        private DateTime? _ending;
+        private DateTime? _endingAfterDate;
+        private int? _endingAfterNumOfOccurrences;
 
         public YearsBuilder(int skipYears, DateTime starting)
         {
@@ -21,9 +22,15 @@ namespace Dates.Recurring.Builders
             _starting = starting;
         }
 
-        public YearsBuilder Ending(DateTime ending)
+        public YearsBuilder Ending(DateTime afterDate)
         {
-            _ending = ending;
+            _endingAfterDate = afterDate;
+            return this;
+        }
+
+        public YearsBuilder Ending(int afterNumOfRecurrences)
+        {
+            _endingAfterNumOfOccurrences = afterNumOfRecurrences;
             return this;
         }
 
@@ -85,7 +92,7 @@ namespace Dates.Recurring.Builders
 
         public Yearly Build()
         {
-            return new Yearly(_skipYears, _dayOfMonth, _month, _starting, _ending);
+            return new Yearly(_skipYears, _dayOfMonth, _month, _starting, _endingAfterDate, _endingAfterNumOfOccurrences);
         }
     }
 }

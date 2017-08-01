@@ -61,6 +61,7 @@ namespace Dates.Recurring.Tests
             Assert.Equal(new DateTime(2015, 2, 10), weekly.Next(new DateTime(2015, 1, 24)));
             Assert.Equal(new DateTime(2015, 2, 10), weekly.Next(new DateTime(2015, 1, 27)));
             Assert.Equal(new DateTime(2015, 2, 13), weekly.Next(new DateTime(2015, 2, 10)));
+            Assert.Null(weekly.Next(new DateTime(2015, 2, 13)));
 
             Assert.Equal(new DateTime(2015, 2, 13), weekly.Prev(new DateTime(2017, 1, 1)));
             Assert.Equal(new DateTime(2015, 2, 10), weekly.Prev(new DateTime(2015, 2, 13)));
@@ -123,6 +124,26 @@ namespace Dates.Recurring.Tests
             var pastSeries = recur.Past(last).Reverse().ToList();
 
             Assert.Equal(futureSeries, pastSeries);
+        }
+
+        [Fact]
+        public void Weekly_EndAfterNumOfOccurences()
+        {
+            IRecurring weekly = Recurs
+                .Starting(new DateTime(2015, 1, 1))
+                .Every(3)
+                .Weeks()
+                .OnDays(Day.TUESDAY | Day.FRIDAY)
+                .Ending(2)
+                .Build();
+
+            Assert.Equal(new DateTime(2015, 1, 2), weekly.Next(new DateTime(2014, 7, 3)));
+            Assert.Equal(new DateTime(2015, 1, 20), weekly.Next(new DateTime(2015, 1, 2)));
+            Assert.Null(weekly.Next(new DateTime(2015, 1, 20)));
+
+            Assert.Equal(new DateTime(2015, 1, 20), weekly.Prev(new DateTime(2017, 1, 1)));
+            Assert.Equal(new DateTime(2015, 1, 2), weekly.Prev(new DateTime(2015, 1, 20)));
+            Assert.Null(weekly.Prev(new DateTime(2015, 1, 2)));
         }
     }
 }

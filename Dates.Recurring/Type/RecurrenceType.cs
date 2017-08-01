@@ -10,13 +10,15 @@ namespace Dates.Recurring.Type
     {
         protected int X { get; set; }
         protected DateTime Starting { get; set; }
-        protected DateTime? Ending { get; set; }
+        protected DateTime? EndingAfterDate { get; set; }
+        protected int? EndingAfterNumOfOccurrences { get; set; }
 
-        public RecurrenceType(int x, DateTime starting, DateTime? ending = null)
+        protected RecurrenceType(int x, DateTime starting, DateTime? endingAfterDate = null, int? endingAfterNumOfOccurrences = null)
         {
             X = x;
             Starting = starting;
-            Ending = ending;
+            EndingAfterDate = endingAfterDate;
+            EndingAfterNumOfOccurrences = endingAfterNumOfOccurrences;
         }
 
         public abstract DateTime? Next(DateTime after);

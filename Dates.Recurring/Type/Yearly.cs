@@ -12,7 +12,7 @@ namespace Dates.Recurring.Type
         public int DayOfMonth { get; set; }
         public Month Month { get; set; }
 
-        public Yearly(int skipYears, int dayOfMonth, Month month, DateTime starting, DateTime? ending) : base(skipYears, starting, ending)
+        public Yearly(int skipYears, int dayOfMonth, Month month, DateTime starting, DateTime? endingAfterDate, int? endingAfterNumOfOccurrences) : base(skipYears, starting, endingAfterDate, endingAfterNumOfOccurrences)
         {
             DayOfMonth = dayOfMonth;
             Month = month;
@@ -20,19 +20,18 @@ namespace Dates.Recurring.Type
 
         public override DateTime? Next(DateTime after)
         {
-            return Next(after, false);
+            return Next(after, out var next) ? (DateTime?)next : null;
         }
 
-        private DateTime? Next(DateTime after, bool ignoreEndLimit)
+        private bool Next(DateTime after, out DateTime next)
         {
-            var next = Starting;
+            var occurrenceCount = 1;
+            next = Starting;
 
-            if (after.Date < Starting.Date)
-            {
+            if (after < Starting)
                 after = Starting - 1.Days();
-            }
 
-            while (next.Date <= after.Date || !MonthMatched(next) || !DayOfMonthMatched(next))
+            while (next <= after || !MonthMatched(next) || !DayOfMonthMatched(next))
             {
                 if (!MonthMatched(next))
                 {
@@ -63,6 +62,15 @@ namespace Dates.Recurring.Type
                     if (next.Day < dayOfMonth)
                     {
                         next = next + 1.Days();
+
+                        if (DayOfMonthMatched(next) && MonthMatched(next))
+                        {
+                            if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                                (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
+                                return false;
+
+                            occurrenceCount++;
+                        }
                     }
                     else
                     {
@@ -75,25 +83,17 @@ namespace Dates.Recurring.Type
                 }
             }
 
-            if (!ignoreEndLimit && Ending.HasValue && next.Date >= Ending.Value.Date)
-            {
-                return null;
-            }
-
-            return next;
+            return true;
         }
 
         public override DateTime? Prev(DateTime before)
         {
-            // ReSharper disable once PossibleInvalidOperationException
-            var next = Next(before, true).Value;
+            Next(before, out var next);
 
-            if (before.Date > Ending.Value.Date)
-            {
-                before = Ending.Value + 1.Days();
-            }
+            if (before > next)
+                before = next;
 
-            while (next.Date >= before.Date || !MonthMatched(next) || !DayOfMonthMatched(next))
+            while (next >= before || !MonthMatched(next) || !DayOfMonthMatched(next))
             {
                 if (!MonthMatched(next))
                 {
@@ -129,10 +129,8 @@ namespace Dates.Recurring.Type
                 }
             }
 
-            if (next.Date < Starting.Date)
-            {
+            if (next < Starting)
                 return null;
-            }
 
             return next;
         }
