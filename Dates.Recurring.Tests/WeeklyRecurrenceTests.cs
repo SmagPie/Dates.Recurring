@@ -130,7 +130,7 @@ namespace Dates.Recurring.Tests
         public void Weekly_EndAfterNumOfOccurences()
         {
             IRecurring weekly = Recurs
-                .Starting(new DateTime(2015, 1, 1))
+                .Starting(new DateTime(2015, 1, 2))
                 .Every(3)
                 .Weeks()
                 .OnDays(Day.TUESDAY | Day.FRIDAY)

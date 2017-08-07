@@ -23,28 +23,31 @@ namespace Dates.Recurring.Type
 
         private bool Next(DateTime after, out DateTime next)
         {
-            var occurrenceCount = 1;
+            var occurrenceCount = 0;
             next = Starting;
 
             if (after < Starting)
                 after = Starting - 1.Days();
 
-            while (next <= after || !DayOfMonthMatched(next))
+            while (true)
             {
+                if (DayOfMonthMatched(next))
+                {
+                    occurrenceCount++;
+
+                    if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                        (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
+                        return false;
+                    if (next > after) return true;
+                }
+
                 int dayOfMonth = Math.Min(DayOfMonth, DateTime.DaysInMonth(next.Year, next.Month));
 
                 if (next.Day < dayOfMonth)
                 {
                     next = next + 1.Days();
 
-                    if (DayOfMonthMatched(next))
-                    {
-                        if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
-                            (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
-                            return false;
-
-                        occurrenceCount++;
-                    }
+                    
                 }
                 else
                 {

@@ -23,26 +23,27 @@ namespace Dates.Recurring.Type
 
         private bool Next(DateTime after, out DateTime next)
         {
-            var occurrenceCount = 1;
+            var occurrenceCount = 0;
             next = Starting;
 
             if (after < Starting)
                 after = Starting - 1.Days();
 
-            while (next <= after || !DayOfWeekMatched(next.DayOfWeek))
+            while (true)
             {
+                if (DayOfWeekMatched(next.DayOfWeek))
+                {
+                    occurrenceCount++;
+
+                    if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                        (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
+                        return false;
+                    if (next > after) return true;
+                }
+
                 if (next.DayOfWeek != DayOfWeek.Saturday)
                 {
                     next = next + 1.Days();
-
-                    if (DayOfWeekMatched(next.DayOfWeek))
-                    {
-                        if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
-                            (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
-                            return false;
-
-                        occurrenceCount++;
-                    }
                 }
                 else
                 {

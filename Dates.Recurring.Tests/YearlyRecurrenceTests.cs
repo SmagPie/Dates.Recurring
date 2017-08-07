@@ -235,6 +235,28 @@ namespace Dates.Recurring.Tests
             Assert.Equal(new DateTime(2015, 1, 24), recur.Prev(new DateTime(2015, 2, 24)));
             Assert.Null(recur.Prev(new DateTime(2015, 1, 24)));
         }
+
+        [Fact]
+        public void Yearly_EndAfterNumOfOccurences2()
+        {
+            IRecurring recur = Recurs
+                .Starting(new DateTime(2015, 1, 24))
+                .Every(1)
+                .Years()
+                .OnDay(24)
+                .Ending(3)
+                .Build();
+
+            Assert.Equal(new DateTime(2015, 1, 24), recur.Next(new DateTime(2014, 2, 1)));
+            Assert.Equal(new DateTime(2016, 1, 24), recur.Next(new DateTime(2015, 1, 24)));
+            Assert.Equal(new DateTime(2017, 1, 24), recur.Next(new DateTime(2016, 1, 24)));
+            Assert.Null(recur.Next(new DateTime(2017, 1, 24)));
+
+            Assert.Equal(new DateTime(2017, 1, 24), recur.Prev(new DateTime(2020, 1, 1)));
+            Assert.Equal(new DateTime(2016, 1, 24), recur.Prev(new DateTime(2017, 1, 24)));
+            Assert.Equal(new DateTime(2015, 1, 24), recur.Prev(new DateTime(2016, 1, 24)));
+            Assert.Null(recur.Prev(new DateTime(2015, 1, 24)));
+        }
     }
 }
 

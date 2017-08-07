@@ -132,21 +132,20 @@ namespace Dates.Recurring.Tests
         public void Monthly_EndAfterNumOfOccurences()
         {
             IRecurring monthly = Recurs
-                .Starting(new DateTime(2015, 1, 1))
-                .Every(3)
+                .Starting(new DateTime(2015, 1, 24))
+                .Every(2)
                 .Months()
                 .OnDay(24)
                 .Ending(2)
                 .Build();
 
-            Assert.Equal(new DateTime(2015, 1, 24), monthly.Next(new DateTime(2014, 2, 1)));
-            Assert.Equal(new DateTime(2015, 4, 24), monthly.Next(new DateTime(2015, 1, 24)));
-            Assert.Null(monthly.Next(new DateTime(2016, 7, 24)));
+            Assert.Equal(new DateTime(2015, 1, 24), monthly.Next(new DateTime(2014, 1, 1)));
+            Assert.Equal(new DateTime(2015, 3, 24), monthly.Next(new DateTime(2015, 1, 24)));
+            Assert.Null(monthly.Next(new DateTime(2015, 3, 24)));
 
-            Assert.Equal(new DateTime(2015, 4, 24), monthly.Prev(new DateTime(2017, 2, 1)));
-            Assert.Equal(new DateTime(2015, 1, 24), monthly.Prev(new DateTime(2015, 4, 24)));
+            Assert.Equal(new DateTime(2015, 3, 24), monthly.Prev(new DateTime(2017, 1, 1)));
+            Assert.Equal(new DateTime(2015, 1, 24), monthly.Prev(new DateTime(2015, 3, 24)));
             Assert.Null(monthly.Prev(new DateTime(2015, 1, 24)));
         }
     }
 }
-

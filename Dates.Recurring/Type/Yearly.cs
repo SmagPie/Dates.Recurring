@@ -25,14 +25,24 @@ namespace Dates.Recurring.Type
 
         private bool Next(DateTime after, out DateTime next)
         {
-            var occurrenceCount = 1;
+            var occurrenceCount = 0;
             next = Starting;
 
             if (after < Starting)
                 after = Starting - 1.Days();
 
-            while (next <= after || !MonthMatched(next) || !DayOfMonthMatched(next))
+            while (true)
             {
+                if (DayOfMonthMatched(next) && MonthMatched(next))
+                {
+                    occurrenceCount++;
+
+                    if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                        (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
+                        return false;
+                    if (next > after) return true;
+                }
+
                 if (!MonthMatched(next))
                 {
                     if (next.Month == 12)
@@ -62,15 +72,6 @@ namespace Dates.Recurring.Type
                     if (next.Day < dayOfMonth)
                     {
                         next = next + 1.Days();
-
-                        if (DayOfMonthMatched(next) && MonthMatched(next))
-                        {
-                            if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
-                                (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
-                                return false;
-
-                            occurrenceCount++;
-                        }
                     }
                     else
                     {
@@ -82,8 +83,6 @@ namespace Dates.Recurring.Type
                     }
                 }
             }
-
-            return true;
         }
 
         public override DateTime? Prev(DateTime before)
