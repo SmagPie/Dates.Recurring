@@ -16,11 +16,48 @@ namespace Dates.Recurring.Type
             Days = days;
         }
 
-        public override DateTime? Next(DateTime after)
+        public override IEnumerable<DateTime> GetSchedule(DateTime forecastLimit)
         {
-            return Next(after, out var next) ? (DateTime?)next : null;
+                var occurrenceCount = 0;
+                var next = Starting;
+                var after = Starting - 1.Days();
+
+                while (true)
+                {
+                    if (DayOfWeekMatched(next.DayOfWeek))
+                    {
+                        occurrenceCount++;
+
+                        if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                            (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences) ||
+                            next > forecastLimit ||
+                            (DateTime.MaxValue.AddDays(-(X * 7)) - next).Days <= 0)
+                            yield break;
+                        if (next > after)
+                            yield return next;
+                    }
+
+                    if (next.DayOfWeek != DayOfWeek.Saturday)
+                    {
+                        next = next + 1.Days();
+                    }
+                    else
+                    {
+                        // Skip ahead by x weeks.
+                        next = next + X.Weeks();
+
+                        // Rewind to the first day of the week.
+                        var delta = DayOfWeek.Sunday - next.DayOfWeek;
+
+                        if (delta > 0)
+                            delta -= 7;
+
+                        next = next + delta.Days();
+                    }
+                }
         }
 
+        [Obsolete("Try make this obsolete")]
         private bool Next(DateTime after, out DateTime next)
         {
             var occurrenceCount = 0;
@@ -63,6 +100,7 @@ namespace Dates.Recurring.Type
             return true;
         }
 
+        [Obsolete("Try make this obsolete")]
         public override DateTime? Prev(DateTime before)
         {
             Next(before, out var next);

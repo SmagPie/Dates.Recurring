@@ -18,11 +18,70 @@ namespace Dates.Recurring.Type
             Month = month;
         }
 
-        public override DateTime? Next(DateTime after)
+        public override IEnumerable<DateTime> GetSchedule(DateTime forecastLimit)
         {
-            return Next(after, out var next) ? (DateTime?)next : null;
-        }
+            var occurrenceCount = 0;
+            var next = Starting;
+            var after = Starting - 1.Days();
 
+            while (true)
+            {
+                if (DayOfMonthMatched(next) && MonthMatched(next))
+                {
+                    occurrenceCount++;
+
+                    if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                        (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences) ||
+                        next > forecastLimit ||
+                        (DateTime.MaxValue.AddYears(-X) - next).Days <= 0)
+                        yield break;
+                    if (next > after)
+                        yield return next;
+                }
+
+                if (!MonthMatched(next))
+                {
+                    if (next.Month == 12)
+                    {
+                        // Rewind to the first of the month.
+                        next = next + ((-1 * next.Day) + 1).Days();
+
+                        // Rewind to the first month
+                        next = next.AddMonths((-1 * next.Month) + 1);
+
+                        // Skip ahead by the required number of years.
+                        next = next.AddYears(X);
+                    }
+                    else
+                    {
+                        // Rewind to the first of the month.
+                        next = next + ((-1 * next.Day) + 1).Days();
+
+                        // Skip to the next month.
+                        next = next.AddMonths(1);
+                    }
+                }
+                else
+                {
+                    int dayOfMonth = Math.Min(DayOfMonth, DateTime.DaysInMonth(next.Year, next.Month));
+
+                    if (next.Day < dayOfMonth)
+                    {
+                        next = next + 1.Days();
+                    }
+                    else
+                    {
+                        // Rewind to the first of the month.
+                        next = next + ((-1 * next.Day) + 1).Days();
+
+                        // Skip to the next month.
+                        next = next.AddMonths(1);
+                    }
+                }
+            }
+        }
+        
+        [Obsolete("Try make this obsolete")]
         private bool Next(DateTime after, out DateTime next)
         {
             var occurrenceCount = 0;
@@ -85,6 +144,7 @@ namespace Dates.Recurring.Type
             }
         }
 
+        [Obsolete("Try make this obsolete")]
         public override DateTime? Prev(DateTime before)
         {
             Next(before, out var next);

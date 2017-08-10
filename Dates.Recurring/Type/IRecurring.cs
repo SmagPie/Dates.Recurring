@@ -9,8 +9,13 @@ namespace Dates.Recurring.Type
     public interface IRecurring
     {
         DateTime? Next(DateTime after);
+        IEnumerable<DateTime> GetSchedule(DateTime forecastLimit);
+
+        [Obsolete]
         DateTime? Prev(DateTime before);
+        [Obsolete]
         IEnumerable<DateTime> Past(DateTime before);
+        [Obsolete]
         IEnumerable<DateTime> Future(DateTime after);
     }
 }

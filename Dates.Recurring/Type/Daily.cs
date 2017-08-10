@@ -14,13 +14,34 @@ namespace Dates.Recurring.Type
         public Daily(int days, DateTime starting, DateTime? endingAfterDate, int? endingAfterNumOfOccurrences) 
             : base(days, starting, endingAfterDate, endingAfterNumOfOccurrences)
         {
+
         }
 
-        public override DateTime? Next(DateTime after)
+        public override IEnumerable<DateTime> GetSchedule(DateTime forecastLimit)
         {
-            return Next(after, out var next) ? (DateTime?)next : null;
-        }
+                var occurrenceCount = 0;
+                var next = Starting;
+                var after = Starting - 1.Days();
 
+                while (true)
+                {
+                    occurrenceCount++;
+
+                    if (next > after)
+                        yield return next;
+
+                    next = next.AddDays(X);
+
+                    if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                        (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences) ||
+                        next > forecastLimit ||
+                        (DateTime.MaxValue.AddDays(-X) - next).Days == 0)
+                        yield break;
+                }
+        }
+        
+
+        [Obsolete("Try make this obsolete")]
         private bool Next(DateTime after, out DateTime next)
         {
             var occurrenceCount = 1;
@@ -42,6 +63,7 @@ namespace Dates.Recurring.Type
             return true;
         }
 
+        [Obsolete("Try make this obsolete")]
         public override DateTime? Prev(DateTime before)
         {
             Next(before, out var next);
