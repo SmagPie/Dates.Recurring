@@ -19,25 +19,27 @@ namespace Dates.Recurring.Type
 
         public override IEnumerable<DateTime> GetSchedule(DateTime forecastLimit)
         {
-                var occurrenceCount = 0;
-                var next = Starting;
-                var after = Starting - 1.Days();
+            var occurrenceCount = 0;
+            var next = Starting;
+            var after = Starting - 1.Days();
 
-                while (true)
-                {
-                    occurrenceCount++;
+            while (true)
+            {
+                occurrenceCount++;
 
-                    if (next > after)
-                        yield return next;
 
-                    next = next.AddDays(X);
+                if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
+                    (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences) ||
+                    next > forecastLimit ||
+                    (DateTime.MaxValue.AddDays(-X) - next).Days == 0)
+                    yield break;
 
-                    if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
-                        (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences) ||
-                        next > forecastLimit ||
-                        (DateTime.MaxValue.AddDays(-X) - next).Days == 0)
-                        yield break;
-                }
+                if (next > after)
+                    yield return next;
+
+                next = next.AddDays(X);
+
+            }
         }
         
 

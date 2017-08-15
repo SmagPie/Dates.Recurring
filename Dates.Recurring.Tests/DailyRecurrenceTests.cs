@@ -84,17 +84,17 @@ namespace Dates.Recurring.Tests
         {
             IRecurring daily = Recurs
                 .Starting(new DateTime(2015, 1, 1))
-                .Every(1)
+                .Every(2)
                 .Days()
                 .Ending(2)
                 .Build();
 
             Assert.Equal(new DateTime(2015, 1, 1), daily.Next(new DateTime(2014, 7, 3)));
-            Assert.Equal(new DateTime(2015, 1, 2), daily.Next(new DateTime(2015, 1, 1)));
+            Assert.Equal(new DateTime(2015, 1, 3), daily.Next(new DateTime(2015, 1, 1)));
             Assert.Null(daily.Next(new DateTime(2015, 1, 3)));
-
-            Assert.Equal(new DateTime(2015, 1, 2), daily.Prev(new DateTime(2017, 1, 1)));
-            Assert.Equal(new DateTime(2015, 1, 1), daily.Prev(new DateTime(2015, 1, 2)));
+//
+            Assert.Equal(new DateTime(2015, 1, 3), daily.Prev(new DateTime(2017, 1, 1)));
+            Assert.Equal(new DateTime(2015, 1, 1), daily.Prev(new DateTime(2015, 1, 3)));
             Assert.Null(daily.Prev(new DateTime(2015, 1, 1)));
         }
     }
