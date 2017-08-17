@@ -19,7 +19,7 @@ namespace Dates.Recurring.Builders
         {
             _weeks = weeks;
             _starting = starting;
-            _days = Day.MONDAY;
+            OnDay(starting.DayOfWeek);
         }
 
         public WeeksBuilder Ending(DateTime afterDate)
