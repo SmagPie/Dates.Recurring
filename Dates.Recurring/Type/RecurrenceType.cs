@@ -21,7 +21,7 @@ namespace Dates.Recurring.Type
             EndingAfterNumOfOccurrences = endingAfterNumOfOccurrences;
         }
 
-        public abstract IEnumerable<DateTime> GetSchedule(DateTime forecastLimit);
+        public abstract IEnumerable<DateTime> GetSchedule(DateTime? forecastLimit = null);
         public abstract DateTime? Prev(DateTime before);
         public DateTime? Next(DateTime after)
         {

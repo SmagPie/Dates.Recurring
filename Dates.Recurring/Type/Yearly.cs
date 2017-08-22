@@ -18,7 +18,7 @@ namespace Dates.Recurring.Type
             Month = month;
         }
 
-        public override IEnumerable<DateTime> GetSchedule(DateTime forecastLimit)
+        public override IEnumerable<DateTime> GetSchedule(DateTime? forecastLimit = null)
         {
             var occurrenceCount = 0;
             var next = Starting;
