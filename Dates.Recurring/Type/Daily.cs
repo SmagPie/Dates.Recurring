@@ -41,45 +41,5 @@ namespace Dates.Recurring.Type
 
             }
         }
-        
-
-        [Obsolete("Try make this obsolete")]
-        private bool Next(DateTime after, out DateTime next)
-        {
-            var occurrenceCount = 1;
-            next = Starting;
-
-            if (after < Starting)
-                after = Starting - 1.Days();
-
-            while ((next.Ticks - after.Ticks) <= TimeSpan.TicksPerSecond)
-            {
-                next = next.AddDays(X);
-                occurrenceCount++;
-
-                if ((EndingAfterDate.HasValue && next > EndingAfterDate.Value) ||
-                    (EndingAfterNumOfOccurrences.HasValue && occurrenceCount > EndingAfterNumOfOccurrences))
-                    return false;
-            }
-
-            return true;
-        }
-
-        [Obsolete("Try make this obsolete")]
-        public override DateTime? Prev(DateTime before)
-        {
-            Next(before, out var next);
-
-            if(before > next)
-                before = next;
-
-            while ((before.Ticks - next.Ticks) <= TimeSpan.TicksPerSecond)
-                next = next.AddDays(-X);
-
-            if (next < Starting)
-                return null;
-
-            return next;
-        }
     }
 }

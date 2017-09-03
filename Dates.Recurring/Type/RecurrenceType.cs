@@ -22,18 +22,11 @@ namespace Dates.Recurring.Type
         }
 
         public abstract IEnumerable<DateTime> GetSchedule(DateTime? forecastLimit = null);
-        public abstract DateTime? Prev(DateTime before);
         public DateTime? Next(DateTime after)
         {
             return GetSchedule(DateTime.MaxValue)
                 .Cast<DateTime?>()
                 .FirstOrDefault(date => date > after);
-        }
-
-        public virtual IEnumerable<DateTime> Past(DateTime before)
-        {
-            for (var prev = Prev(before); prev != null; prev = Prev(prev.Value))
-                yield return prev.Value;
         }
 
         public virtual IEnumerable<DateTime> Future(DateTime after)
