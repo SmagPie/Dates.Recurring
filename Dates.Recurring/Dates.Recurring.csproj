@@ -1,19 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>Dates.Recurring</AssemblyName>
     <RootNamespace>Dates.Recurring</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Humanizer.Core" Version="2.1.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System.ComponentModel.Primitives">
       <HintPath>..\..\..\..\..\..\Users\DuCKa\.nuget\packages\system.componentmodel.primitives\4.3.0\ref\netstandard1.0\System.ComponentModel.Primitives.dll</HintPath>
     </Reference>
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="2.2.0" />
+    <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
+  </ItemGroup>
 </Project>
